@@ -1,4 +1,5 @@
 const connection = require('../database/connection')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
     add(dados, res){
@@ -10,7 +11,7 @@ module.exports = {
             if(erro){
                 res.status(400).json(erro)
             }else{
-                res.status(200).json({dados})
+                res.status(200).json(dados)
             }
         })
     },
@@ -28,21 +29,20 @@ module.exports = {
                 return res.status(401).send({ mensagem: 'Falha na Autenticação' })
             }
             if(password == resultado[0].password){
-                return res.status(200).send({ mensagem: 'Autenticado com sucesso' })
+                const token = jwt.sign({
+                    id: resultado[0].id,
+                    email: resultado[0].email
+                },
+                    process.env.JWT_KEY,
+                    {
+                        expiresIn: "1h"
+                    })
+                return res.status(200).send({ 
+                    mensagem: 'Autenticado com sucesso',
+                    token: token
+                 })
             }
                 return res.status(401).send({ mensagem: 'Falha na Autenticação' })
-           /*  if(req)
-            bcrypt.compare(req.body.password, resultado[0].password, (erro, resultado) => {
-                
-                if(erro){
-                    return res.status(401).send({ mensagem: 'Falha na err2' })
-                }
-                if(resultado){
-                    return res.status(200).send({ mensagem: 'Autenticado com sucesso' })
-                }
-                return res.status(401).send({ mensagem: 'Falha total' })
-            }) */
-            
         })
     }
 }
