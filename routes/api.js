@@ -8,4 +8,13 @@ module.exports = app => {
         Posts.add(dados, res)
 
     })
+
+    app.post('/login', (req, res) => {
+
+        const email = req.body.email
+        const password = req.body.password
+
+        Posts.login(email, password, res)
+
+    })
 }
