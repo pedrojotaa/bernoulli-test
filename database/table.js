@@ -8,8 +8,8 @@ class Tabela {
     createTable(){
         const sql = `create table if not exists cadastro (
             id int primary key not null auto_increment,
-            email varchar(50) not null,
-            password varchar(20) not null
+            email varchar(50) unique key not null,
+            password varchar(100) not null
         )`
 
         this.connection.query(sql, erro => {
