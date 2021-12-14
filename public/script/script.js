@@ -3,7 +3,8 @@ let labelEmail = document.getElementById('label-email')
 let inputPassword = document.getElementById('password')
 let labelPassword = document.getElementById('label-password')
 
-let btn = document.getElementById('log-btn')
+let registerBtn = document.getElementById('register-btn')
+let loginBtn = document.getElementById('login-btn')
 
 let validEmail = false
 let validPassword = false
@@ -46,10 +47,8 @@ inputPassword.addEventListener('input', (event) => {
         validPassword = true
     }})
 
-btn.addEventListener('click', (event) => {
+registerBtn.addEventListener('click', (event) => {
     event.preventDefault()
-
-    if(validEmail && validPassword){
 
         let email = inputEmail.value
         let password = inputPassword.value
@@ -66,10 +65,28 @@ btn.addEventListener('click', (event) => {
      
         fetch(url, option)
 
-        location.href = './templates/dashboard.html'
-
-        
-    }
+        location.href = './templates/login.html'
+    
 })
 
+loginBtn.addEventListener('click', (event) => {
+    event.preventDefault()
+
+        let email = inputEmail.value
+        let password = inputPassword.value
     
+        let post = {email, password}
+    
+        const option = {
+            method: 'POST',
+            headers: new Headers({'content-type' : 'application/json'}),
+            body: JSON.stringify(post)
+        }
+     
+        const url = 'http://localhost:3000/cadastro'
+     
+        fetch(url, option)
+
+        location.href = './templates/login.html'
+    
+})    

@@ -2,7 +2,7 @@ const connection = require('../database/connection')
 const jwt = require('jsonwebtoken')
 
 module.exports = {
-    add(dados, res){
+    cadastro(dados, res){
 
         const sql = 'insert into cadastro set ?'
 
@@ -44,5 +44,22 @@ module.exports = {
             }
                 return res.status(401).send({ mensagem: 'Falha na Autenticação' })
         })
+    },
+    
+    lista(res){
+
+        const sql = 'select * from cadastro'
+
+        connection.query(sql, (erro, resposta) => {
+
+            if(erro){
+                res.status(400).json(erro)
+            }else{
+                res.status(200).json(resposta)
+            }
+
+        })
     }
+
+
 }
