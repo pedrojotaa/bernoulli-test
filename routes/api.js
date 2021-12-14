@@ -1,21 +1,30 @@
 const Posts = require('../model/posts')
 const login = require('../middleware/login')
+const bcrypt = require('bcrypt')
 
 module.exports = app => {
-    app.post('/cadastro', (req, res) => {
+    app.post('/cadastro', async (req, res) => {
 
-        const dados = req.body
+        try{
 
-        Posts.cadastro(dados, res)
+            const hashedPassword = await bcrypt.hash(req.body.password, 10)
+            const user = { email: req.body.email, password: hashedPassword }
 
+            Posts.cadastro(user, res)
+
+        }catch{
+
+            res.status(500).send()
+          
+        }
+        
     })
 
-    app.post('/login', (req, res) => {
+    app.post('/login', async (req, res) => {
      
-        const email = req.body.email
-        const password = req.body.password
+        const user = { email: req.body.email, password: req.body.password }
 
-        Posts.login(email, password, res)
+        Posts.login(user, res)
 
     })
 

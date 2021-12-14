@@ -1,50 +1,55 @@
 const connection = require('../database/connection')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 module.exports = {
-    cadastro(dados, res){
+    cadastro(user, res){
 
         const sql = 'insert into cadastro set ?'
 
-        connection.query(sql, dados, (erro, resultado) => {
+        connection.query(sql, user, (err, resultado) => {
     
-            if(erro){
-                res.status(400).json(erro)
+            if(err){
+                res.status(400).json(err)
             }else{
-                res.status(200).json(dados)
+                res.status(200).json(user)
             }
         })
     },
 
-    login(email, password, res){
+    login (user, res){
 
         const sql = 'select * from cadastro where email = ?'
 
-        connection.query(sql, email, (erro, resultado) => {
-            
-            if(erro){
-                return res.send(500).send({ mensagem: 'Falha na Autenticação' })
-            }
-            if(resultado < 1){
-                return res.status(401).send({ mensagem: 'Falha na Autenticação' })
-            }
-            if(password == resultado[0].password){
-                const token = jwt.sign({
-                    id: resultado[0].id,
-                    email: resultado[0].email
-                },
-                    process.env.JWT_KEY,
-                    {
-                        expiresIn: "1h"
+        connection.query(sql, [user.email], async (err, resultado) => {
+                if(err){
+                    return res.send(500).send({ mensagem: 'Erro' })
+                }
+                if(resultado < 1 ){
+                    return res.status(401).send({ mensagem: 'Usuario nao encontrado' })
+                }
+            try{
+                if(await bcrypt.compare(user.password, resultado[0].password)){
+                    const token = jwt.sign({
+                        id: resultado[0].id,
+                        email: resultado[0].email
+                    },
+                        process.env.JWT_KEY,
+                        {
+                            expiresIn: "1h"
+                        })
+                    return res.status(200).send({ 
+                        mensagem: 'Autenticado com sucesso',
+                        token: token
                     })
-                return res.status(200).send({ 
-                    mensagem: 'Autenticado com sucesso',
-                    token: token
-                 })
+                }else{
+                    res.status(401).send({ mensagem: 'Não Permitido' })
+                }
+            }catch(err){
+                res.status(401).send()
             }
-                return res.status(401).send({ mensagem: 'Falha na Autenticação' })
-        })
-    },
+            })
+        },
     
     lista(res){
 
