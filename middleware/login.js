@@ -5,7 +5,7 @@ exports.obrigatorio = (req, res, next) => {
     try{
         const token = req.headers.authorization.split(' ')[1]
         //decoded é o token decodificado
-        const decoded = jwt.verify(token, process.env.JWT_KEY)
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN)
     
         req.usuario = decoded
     
@@ -19,7 +19,7 @@ exports.opicional = (req, res, next) => {
     
     try{
         const token = req.headers.authorization.split(' ')[1]
-        const decode = jwt.verify(token, process.env.JWT_KEY)
+        const decode = jwt.verify(token, process.env.ACCESS_TOKEN)
     
         req.usuario = decode
     
@@ -27,4 +27,24 @@ exports.opicional = (req, res, next) => {
     }catch (erro){
         next()
     }
+}
+
+exports.cookie = (req, res, next) => {
+    
+    const token = req.cookies.cookie_token;
+    console.log(token)
+    if (!token) {
+      return res.sendStatus(403);
+    }
+    try {
+      const data = jwt.verify(token, process.env.ACCESS_TOKEN);
+      
+      req.userId = data.id;
+      req.userRole = data.role;
+      console.log(data.id)
+      return next();
+    } catch {
+      return res.sendStatus(403);
+    }
+
 }

@@ -1,6 +1,6 @@
-const connection = require('../database/connection')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const connection = require('../database/connection')
 
 module.exports = {
     cadastro(user, res){
@@ -34,14 +34,19 @@ module.exports = {
                         id: resultado[0].id,
                         email: resultado[0].email
                     },
-                        process.env.JWT_KEY,
+                        process.env.ACCESS_TOKEN,
                         {
                             expiresIn: "1h"
                         })
-                    return res.status(200).send({ 
-                        mensagem: 'Autenticado com sucesso',
-                        token: token
+                        
+                    res
+                    .cookie('cookie_token', token, {
+                        httpOnly: true,
+                        //secret: true
                     })
+                    res
+                    .status(200)
+                    .send({ mensagem: 'Logado com sucesso' })
                 }else{
                     res.status(401).send({ mensagem: 'Não Permitido' })
                 }
@@ -52,19 +57,16 @@ module.exports = {
         },
     
     lista(res){
-
+        
         const sql = 'select * from cadastro'
-
+    
         connection.query(sql, (erro, resposta) => {
-
+        
             if(erro){
                 res.status(400).json(erro)
             }else{
-                res.status(200).json(resposta)
+                res.status(200).json({mensagem: 'Pode Buscar'})
             }
-
         })
     }
-
-
 }
