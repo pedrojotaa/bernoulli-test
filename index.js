@@ -10,10 +10,10 @@ connection.connect(erro => {
         console.log(erro)
     }else{
         console.log('Conectado com sucesso!')
-
         Tables.init(connection)
         
         const app = customExpress()
+     
         app.use('/', express.static(path.join(__dirname, 'public')))
         app.listen(PORT, () => console.log(`Server rodando na porta ${PORT}`))
     }

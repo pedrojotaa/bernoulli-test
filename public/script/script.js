@@ -83,7 +83,7 @@ loginBtn.addEventListener('click', (event) => {
             body: JSON.stringify(post)
         }
      
-        const url = 'http://localhost:3000/cadastro'
+        const url = 'http://localhost:3000/login'
      
         fetch(url, option)
 
